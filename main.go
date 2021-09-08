@@ -14,17 +14,17 @@ import (
 func main() {
 	total := 0.0
 
-	err := filepath.Walk("./dir", func(p string, info fs.FileInfo, err error) error {
+	err := filepath.Walk(".", func(p string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
 
 		if !info.IsDir() {
-			ext := strings.Split(info.Name(), ".")[1]
-
-			if ext == "mkv" || ext == "mp4" {
-				fmt.Printf("%s	|	%.3f minutes\n", p, getDuration(p))
-				total += getDuration(p)
+			if ext := strings.Split(info.Name(), "."); len(ext) > 1 {
+				if ext[1] == "mkv" || ext[1] == "mp4" {
+					fmt.Printf("%s	|	%.3f minutes\n", p, getDuration(p))
+					total += getDuration(p)
+				}
 			}
 		}
 
