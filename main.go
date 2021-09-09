@@ -14,6 +14,7 @@ import (
 
 func main() {
 	dirPath := flag.String("path", ".", "Path of the directory to check videos in it.")
+	flag.Parse()
 
 	total := 0.0
 
