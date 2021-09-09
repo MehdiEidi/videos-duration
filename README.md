@@ -1,2 +1,2 @@
 # videos-length
-Outputs the length of all videos existing in directory and subdirectories.
+Outputs the duration of all video files existing in the given directory and subdirectories.
