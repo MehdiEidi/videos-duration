@@ -25,7 +25,7 @@ func main() {
 
 		if !info.IsDir() {
 			if ext := strings.Split(info.Name(), "."); len(ext) > 1 {
-				if ext[len(ext)-1] == "mkv" || ext[len(ext)-1] == "mp4" {
+				if ext[len(ext)-1] == "mkv" || ext[len(ext)-1] == "mp4" || ext[len(ext)-1] == "wmv" || ext[len(ext)-1] == "avi" {
 					fmt.Printf("%s	|	%.3f minutes\n", p, getDuration(p))
 					total += getDuration(p)
 				}
