@@ -1,5 +1,8 @@
-module github.com/MehdiEidi/video-length
+module github.com/mehdieidi/viduration
 
-go 1.17
+go 1.19
 
-require github.com/vansante/go-ffprobe v1.1.0
+require (
+	github.com/golang-ds/set v1.0.0
+	github.com/vansante/go-ffprobe v1.1.0
+)

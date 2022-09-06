@@ -8,23 +8,31 @@ import (
 	"path/filepath"
 	"time"
 
+	set "github.com/golang-ds/set"
 	ffprobe "github.com/vansante/go-ffprobe"
 )
 
-func getDuration(p string) float64 {
-	data, err := ffprobe.GetProbeData(p, 120000*time.Millisecond)
+func duration(f string) (float64, error) {
+	data, err := ffprobe.GetProbeData(f, 120000*time.Millisecond)
 	if err != nil {
-		log.Fatal(err)
+		return 0, err
 	}
 
-	duration := data.Format.Duration().Seconds() / 60
+	minutes := data.Format.Duration().Seconds() / 60
 
-	return duration
+	return minutes, nil
 }
 
 func main() {
-	dirPath := flag.String("path", ".", "Path of the directory to check videos in it.")
+	dirPath := flag.String("path", ".", "Path")
 	flag.Parse()
+
+	extensions := set.New[string]()
+	extensions.Add(".mkv")
+	extensions.Add(".mp4")
+	extensions.Add(".wmv")
+	extensions.Add(".avi")
+	extensions.Add(".ts")
 
 	var total float64
 
@@ -36,11 +44,16 @@ func main() {
 		if !info.IsDir() {
 			ext := filepath.Ext(p)
 
-			if ext == ".mkv" || ext == ".mp4" || ext == ".wmv" || ext == ".avi" || ext == ".ts" {
-				fmt.Printf("%s --> %.3f minutes\n", p, getDuration(p))
-				total += getDuration(p)
-			}
+			if ok := extensions.Has(ext); ok {
+				d, err := duration(p)
+				if err != nil {
+					return err
+				}
 
+				fmt.Printf("%s --> %.3f mins\n", p, d)
+
+				total += d
+			}
 		}
 
 		return nil
