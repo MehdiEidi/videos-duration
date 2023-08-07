@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/fs"
 	"log"
+	"math"
 	"path/filepath"
 	"time"
 
@@ -33,6 +34,11 @@ func main() {
 	extensions.Add(".wmv")
 	extensions.Add(".avi")
 	extensions.Add(".ts")
+	extensions.Add(".webm")
+	extensions.Add(".mov")
+	extensions.Add(".ogg")
+	extensions.Add(".vob")
+	extensions.Add(".m4v")
 
 	var total float64
 
@@ -65,4 +71,7 @@ func main() {
 
 	fmt.Printf("======================================================================\n")
 	fmt.Printf("Total duration of all videos: %.2f minutes\n", total)
+
+	hours := math.Ceil(total / 60.0)
+	fmt.Printf("Total duration of all videos: %d hours\n", int(hours))
 }
