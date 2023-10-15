@@ -7,6 +7,7 @@ import (
 	"log"
 	"math"
 	"path/filepath"
+	"strings"
 	"time"
 
 	set "github.com/golang-ds/set"
@@ -26,6 +27,7 @@ func duration(f string) (float64, error) {
 
 func main() {
 	dirPath := flag.String("path", ".", "Path")
+	excludeDir := flag.String("e", "", "Exclude dir")
 	flag.Parse()
 
 	extensions := set.New[string]()
@@ -47,6 +49,12 @@ func main() {
 			return err
 		}
 
+		if *excludeDir != "" {
+			if strings.Contains(p, *excludeDir) {
+				return nil
+			}
+		}
+
 		if !info.IsDir() {
 			ext := filepath.Ext(p)
 
@@ -64,12 +72,11 @@ func main() {
 
 		return nil
 	})
-
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("======================================================================\n")
+	fmt.Println("======================================================================")
 	fmt.Printf("Total duration of all videos: %.2f minutes\n", total)
 
 	hours := math.Ceil(total / 60.0)
