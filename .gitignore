@@ -15,9 +15,11 @@
 # vendor/
 
 .vscode/
+.idea/
 
 *.mkv
 *.mp4
 *.wmv
 *.avi
 *.ts 
+viduration
