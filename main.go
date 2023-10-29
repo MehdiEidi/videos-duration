@@ -64,9 +64,10 @@ func main() {
 					return err
 				}
 
-				hours := math.Ceil(d / 60.0)
+				hours := d / 60.0
+				mins := int(d) % 60.0
 
-				fmt.Printf("%s --> %.3f mins | %d hours\n", p, d, int(hours))
+				fmt.Printf("%s --> %d hours | %d mins\n", p, int(hours), mins)
 
 				total += d
 			}
