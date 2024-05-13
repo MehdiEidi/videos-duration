@@ -4,16 +4,16 @@ import (
 	"flag"
 	"fmt"
 	"io/fs"
-	"log"
 	"math"
 	"path/filepath"
 	"strings"
 	"time"
 
-	set "github.com/golang-ds/set"
-	ffprobe "github.com/vansante/go-ffprobe"
+	"github.com/golang-ds/set"
+	"github.com/vansante/go-ffprobe"
 )
 
+// duration returns the video length of the given video file in minutes.
 func duration(f string) (float64, error) {
 	data, err := ffprobe.GetProbeData(f, 120000*time.Millisecond)
 	if err != nil {
@@ -26,8 +26,8 @@ func duration(f string) (float64, error) {
 }
 
 func main() {
-	dirPath := flag.String("path", ".", "Path")
-	excludeDir := flag.String("e", "", "Exclude dir")
+	dir := flag.String("d", ".", "Directory to check video files.")
+	excludeDir := flag.String("e", "", "Directory to exclude checking.")
 	flag.Parse()
 
 	extensions := set.New[string]()
@@ -42,9 +42,9 @@ func main() {
 	extensions.Add(".vob")
 	extensions.Add(".m4v")
 
-	var total float64
+	var totalDuration float64
 
-	err := filepath.Walk(*dirPath, func(p string, info fs.FileInfo, err error) error {
+	err := filepath.Walk(*dir, func(p string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -55,33 +55,35 @@ func main() {
 			}
 		}
 
-		if !info.IsDir() {
-			ext := filepath.Ext(p)
+		if info.IsDir() {
+			return nil
+		}
 
-			if ok := extensions.Has(ext); ok {
-				d, err := duration(p)
-				if err != nil {
-					return err
-				}
+		ext := filepath.Ext(p)
 
-				hours := d / 60.0
-				mins := int(d) % 60.0
-
-				fmt.Printf("%s --> %d hours | %d mins\n", p, int(hours), mins)
-
-				total += d
+		if extensions.Has(ext) {
+			d, err := duration(p)
+			if err != nil {
+				return err
 			}
+
+			hours := d / 60.0
+			minutes := int(d) % 60.0
+
+			fmt.Printf("%s --> %d hours | %d mins\n", p, int(hours), minutes)
+
+			totalDuration += d
 		}
 
 		return nil
 	})
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
 
-	fmt.Println("======================================================================")
-	fmt.Printf("Total duration of all videos: %.2f minutes\n", total)
+	hours := math.Ceil(totalDuration / 60.0)
 
-	hours := math.Ceil(total / 60.0)
-	fmt.Printf("Total duration of all videos: %d hours\n", int(hours))
+	fmt.Println("---------------------------------------------------------------")
+
+	fmt.Printf("Total duration: %.2f minutes (%d hours)\n", totalDuration, int(hours))
 }
